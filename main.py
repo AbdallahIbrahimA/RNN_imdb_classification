@@ -1,7 +1,7 @@
 # Step 1: Import Libraries and Load the Model
-from keras.datasets import imdb
-from keras.preprocessing import sequence
-from keras.models import load_model
+from tensorflow.keras.datasets import imdb
+from tensorflow.keras.preprocessing import sequence
+from tensorflow.keras.models import load_model
 import streamlit as st
 
 # Load the IMDB dataset word index
@@ -47,6 +47,7 @@ if st.button('Classify'):
     print(sentiment , prediction)
 else:
     st.write('Please enter a movie review.')
+
 
 
 
