@@ -1,60 +1,17 @@
 # Step 1: Import Libraries and Load the Model
-from tensorflow.keras.datasets import imdb
-from tensorflow.keras.preprocessing import sequence
-from tensorflow.keras.models import load_model
+from keras.datasets import imdb
+from keras.preprocessing import sequence
+from keras.models import load_model
 import streamlit as st
-import tensorflow as tf
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import SimpleRNN, Dense, Embedding, InputLayer
-import numpy as np
 
-# Custom InputLayer to handle batch_shape issue
-class FixedInputLayer(InputLayer):
-    def __init__(self, *args, **kwargs):
-        if 'batch_shape' in kwargs:
-            batch_shape = kwargs.pop('batch_shape')
-            if batch_shape and len(batch_shape) > 1:
-                kwargs['input_shape'] = batch_shape[1:]
-        super().__init__(*args, **kwargs)
+# Load the IMDB dataset word index
+word_index = imdb.get_word_index()
+reverse_word_index = {value: key for key, value in word_index.items()}
 
-@st.cache_resource
-def create_and_load_model():
-    # Rebuild the exact model architecture
-    model = Sequential([
-        FixedInputLayer(input_shape=(239,)),  # Use input_shape instead of batch_shape
-        Embedding(input_dim=10000, output_dim=32, input_length=239),
-        SimpleRNN(128, activation='relu'),
-        Dense(1, activation="sigmoid")
-    ])
-    
-    # Compile the model (same as original)
-    model.compile(optimizer='adam', 
-                 loss='binary_crossentropy', 
-                 metrics=['accuracy'])
-    
-    # Load weights from the .keras file
-    try:
-        # Method 1: Try to load weights directly from .keras file
-        with h5py.File('model/simple_rnn_imdb.keras', 'r') as f:
-            if 'model_weights' in f:
-                # Load weights layer by layer
-                for layer in model.layers:
-                    if layer.name in f['model_weights']:
-                        weight_values = []
-                        for weight_name in f[f'model_weights/{layer.name}']:
-                            weight_values.append(f[f'model_weights/{layer.name}/{weight_name}'][()])
-                        if weight_values:
-                            layer.set_weights(weight_values)
-        
-        st.success("✅ Model weights loaded successfully!")
-        return model
-        
-    except Exception as e:
-        st.error(f"❌ Error loading weights: {e}")
-        return None
 
-# Load model
-model = create_and_load_model()
+
+# Load the pre-trained model with ReLU activation
+model = load_model('model/simple_rnn_imdb.h5')
 
 if model:
     st.success("Model ready for predictions!")
@@ -98,6 +55,7 @@ if st.button('Classify'):
     print(sentiment , prediction)
 else:
     st.write('Please enter a movie review.')
+
 
 
 
