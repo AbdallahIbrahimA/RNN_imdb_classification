@@ -2,14 +2,25 @@
 from tensorflow.keras.datasets import imdb
 from tensorflow.keras.preprocessing import sequence
 from tensorflow.keras.models import load_model
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import SimpleRNN, Dense, Embedding
 import streamlit as st
 
 # Load the IMDB dataset word index
 word_index = imdb.get_word_index()
 reverse_word_index = {value: key for key, value in word_index.items()}
 
+
+max_len=239
+max_features=10000
+
+model=Sequential()
+
+model.add(Embedding(max_features,128,input_length=max_len , input_shape=(max_len,))) ## Embedding Layers
+model.add(SimpleRNN(128,activation='relu'))
+model.add(Dense(1,activation="sigmoid"))
 # Load the pre-trained model with ReLU activation
-model = load_model('simple_rnn_imdb.keras')
+model.load_weights('simple_rnn_imdb_weights.keras')
 
 # Step 2: Helper Functions
 # Function to decode reviews
@@ -47,6 +58,7 @@ if st.button('Classify'):
     print(sentiment , prediction)
 else:
     st.write('Please enter a movie review.')
+
 
 
 
