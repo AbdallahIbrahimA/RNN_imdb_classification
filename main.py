@@ -35,7 +35,7 @@ def create_and_load_model():
     # Load weights from the .keras file
     try:
         # Method 1: Try to load weights directly from .keras file
-        with h5py.File('simple_rnn_imdb.keras', 'r') as f:
+        with h5py.File('model/simple_rnn_imdb.keras', 'r') as f:
             if 'model_weights' in f:
                 # Load weights layer by layer
                 for layer in model.layers:
@@ -98,6 +98,7 @@ if st.button('Classify'):
     print(sentiment , prediction)
 else:
     st.write('Please enter a movie review.')
+
 
 
 
